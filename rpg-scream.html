@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPG Scream — Fichas</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;600&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0a0a0a; --panel:#111111; --red:#c0392b; --red2:#8b1c13;
+  --blue:#1a4fa0; --gold:#e5b800; --gold2:#a07d00;
+  --white:#f0ece6; --muted:#666; --border:#2a2a2a; --border2:#3a3a3a;
+}
+body { background:var(--bg); color:var(--white); font-family:'Oswald',sans-serif; min-height:100vh; }
+#view-form { display:block; }
+#view-board { display:none; }
+
+.form-shell { max-width:700px; margin:0 auto; padding:2rem 1rem 4rem; }
+.form-header { text-align:center; margin-bottom:2rem; }
+.form-header h1 {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,10vw,5.5rem);
+  letter-spacing:0.08em; color:var(--white); line-height:0.9;
+  text-shadow:4px 4px 0 #000,0 0 40px rgba(192,57,43,0.5);
+}
+.rpg-tag { font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:0.4em; color:var(--red); display:block; margin-bottom:0.2rem; }
+.pt-tag  { font-family:'Bebas Neue',sans-serif; font-size:1.2rem; letter-spacing:0.3em; color:var(--red); display:block; margin-top:0.2rem; }
+.blood-line { width:100%; height:2px; background:var(--red); margin:1.5rem 0; position:relative; }
+.blood-line::after { content:''; position:absolute; right:20%; top:0; width:60px; height:6px; background:var(--red2); clip-path:polygon(0 0,100% 0,80% 100%,20% 100%); }
+
+.portrait-upload-area { display:flex; flex-direction:column; align-items:center; margin-bottom:2rem; }
+.portrait-circle { width:160px; height:160px; border-radius:50%; border:5px solid #111; outline:3px solid var(--border2); background:#1a1a1a; overflow:hidden; cursor:pointer; position:relative; }
+.portrait-circle img, .portrait-circle video { width:100%; height:100%; object-fit:cover; display:none; }
+.portrait-circle .ph { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--muted); font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; gap:0.4rem; }
+.portrait-circle .ph svg { width:36px; height:36px; opacity:0.4; }
+.portrait-circle:hover { outline-color:var(--red); }
+#gif-input { display:none; }
+
+.section { background:var(--panel); border:1px solid var(--border); margin-bottom:1rem; padding:1.25rem; }
+.section-title { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.2em; color:var(--red); border-bottom:1px solid var(--border); padding-bottom:0.5rem; margin-bottom:1rem; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:480px){ .field-row { grid-template-columns:1fr; } }
+.field { display:flex; flex-direction:column; gap:0.3rem; }
+label { font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); }
+input[type="text"],input[type="number"] { background:#0d0d0d; border:1px solid var(--border2); color:var(--white); font-family:'Oswald',sans-serif; font-size:1.1rem; padding:0.55rem 0.8rem; outline:none; width:100%; transition:border-color 0.15s; }
+input:focus { border-color:var(--red); }
+
+.bar-preview { margin-top:0.75rem; }
+.bar-label { font-size:0.65rem; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; margin-bottom:0.3rem; }
+.bar-track { height:22px; border:2px solid #000; position:relative; margin-bottom:0.5rem; overflow:hidden; }
+.bar-fill-red  { background:var(--red);  height:100%; transition:width 0.3s; }
+.bar-fill-blue { background:var(--blue); height:100%; transition:width 0.3s; }
+.bar-text { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Oswald',sans-serif; font-size:0.9rem; font-weight:600; color:#fff; letter-spacing:0.1em; text-shadow:1px 1px 2px #000; }
+
+.dice-controls { display:flex; align-items:center; gap:0.75rem; margin-top:0.5rem; }
+.dice-display { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.75rem; min-height:28px; }
+.die-chip { width:36px; height:36px; background:#1a1a1a; border:2px solid #333; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--gold); }
+.dice-count-badge { width:48px; height:48px; background:#111; border:2px solid var(--gold2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:var(--gold); }
+.btn-dice { background:#1a1a1a; border:1px solid var(--border2); color:var(--white); font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:0.1em; padding:0.4rem 0.9rem; cursor:pointer; text-transform:uppercase; transition:all 0.15s; }
+.btn-dice:hover { border-color:var(--gold); color:var(--gold); }
+
+.arch-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:0.5rem; }
+.arch-btn { background:#0d0d0d; border:1px solid var(--border); color:var(--muted); font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.6rem 0.4rem; cursor:pointer; text-align:center; transition:all 0.15s; }
+.arch-btn:hover { border-color:#444; color:var(--white); }
+.arch-btn.active { background:#1a0a0a; border-color:var(--red); color:var(--white); }
+.arch-btn .arch-icon { display:block; font-size:1.2rem; margin-bottom:0.2rem; }
+
+.btn-submit { width:100%; background:var(--red2); border:2px solid var(--red); color:var(--white); font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:0.3em; padding:1rem; cursor:pointer; margin-top:1.5rem; transition:all 0.2s; }
+.btn-submit:hover { background:var(--red); }
+
+.firebase-section { background:var(--panel); border:1px solid var(--border); padding:1.25rem; margin-bottom:1rem; }
+.firebase-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+@media(max-width:480px){ .firebase-row { grid-template-columns:1fr; } }
+.fb-badge { display:inline-block; font-size:0.7rem; padding:0.25rem 0.6rem; border:1px solid; letter-spacing:0.1em; text-transform:uppercase; margin-top:0.75rem; }
+.fb-badge.off { color:var(--muted); border-color:#333; }
+.fb-badge.on  { color:#2ecc71; border-color:#1a5c35; }
+
+.save-bar { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-top:1.5rem; padding:1rem; background:var(--panel); border:1px solid var(--border); }
+.save-status { font-size:0.8rem; color:var(--muted); font-style:italic; }
+.save-status.ok  { color:#2ecc71; }
+.save-status.err { color:var(--red); }
+
+/* ══ BOARD ══ */
+.board-shell { padding:2rem 1rem 4rem; }
+.board-header { text-align:center; margin-bottom:2rem; }
+.board-header h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.5rem,8vw,4.5rem); letter-spacing:0.1em; text-shadow:3px 3px 0 #000; }
+.board-header h1 span { color:var(--red); }
+.board-nav { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+.btn-nav { background:transparent; border:1px solid var(--border2); color:var(--white); font-family:'Oswald',sans-serif; font-size:0.8rem; letter-spacing:0.15em; text-transform:uppercase; padding:0.5rem 1.2rem; cursor:pointer; transition:all 0.15s; }
+.btn-nav:hover { border-color:var(--red); color:var(--red); }
+.btn-nav.add { border-color:var(--red); color:var(--red); }
+.btn-nav.add:hover { background:var(--red2); color:var(--white); }
+
+.chars-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem; }
+
+.char-card { background:var(--panel); border:1px solid var(--border); position:relative; }
+.char-card-top { display:flex; align-items:flex-start; padding:1rem 1rem 0.75rem 0; }
+.card-portrait-wrap { position:relative; flex-shrink:0; margin-left:-1px; }
+.card-portrait { width:100px; height:100px; border-radius:50%; border:4px solid #0a0a0a; outline:2px solid #333; object-fit:cover; display:block; background:#1a1a1a; }
+.card-portrait-placeholder { width:100px; height:100px; border-radius:50%; border:4px solid #0a0a0a; outline:2px solid #333; background:#1a1a1a; display:flex; align-items:center; justify-content:center; color:#333; font-size:2.5rem; }
+.card-dice-badge { position:absolute; bottom:0; left:0; width:32px; height:32px; background:#0a0a0a; border:2px solid var(--gold2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:1rem; color:var(--gold); z-index:2; }
+.card-info { flex:1; padding-left:0.75rem; min-width:0; }
+.card-name { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:0.08em; color:var(--white); line-height:1; margin-bottom:0.2rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.card-archs { font-size:0.6rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.5rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.card-bars { display:flex; flex-direction:column; gap:4px; }
+.card-bar-track { height:20px; border:2px solid #000; overflow:hidden; position:relative; }
+.card-bar-fill-red  { background:var(--red);  height:100%; transition:width 0.25s; }
+.card-bar-fill-blue { background:var(--blue); height:100%; transition:width 0.25s; }
+.card-bar-label { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Oswald',sans-serif; font-size:0.8rem; font-weight:600; color:#fff; text-shadow:1px 1px 2px #000; letter-spacing:0.05em; }
+
+/* master controls */
+.master-controls { border-top:1px solid var(--border); padding:0.75rem 1rem 0.85rem; background:#0d0d0d; }
+.master-title { font-family:'Bebas Neue',sans-serif; font-size:0.7rem; letter-spacing:0.25em; color:var(--muted); text-transform:uppercase; margin-bottom:0.55rem; }
+
+.ctrl-row { display:flex; align-items:center; gap:0.45rem; margin-bottom:0.45rem; }
+.ctrl-label { font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; width:46px; flex-shrink:0; }
+.ctrl-btn { width:28px; height:28px; border:1px solid var(--border2); background:#1a1a1a; color:var(--white); font-family:'Bebas Neue',sans-serif; font-size:1.15rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.12s; flex-shrink:0; line-height:1; }
+.ctrl-btn:hover { border-color:var(--red); color:var(--red); }
+.ctrl-btn.plus:hover { border-color:#2ecc71; color:#2ecc71; }
+.ctrl-val { font-family:'Bebas Neue',sans-serif; font-size:0.95rem; color:var(--white); min-width:40px; text-align:center; letter-spacing:0.04em; flex-shrink:0; }
+.ctrl-bar-mini { flex:1; height:8px; background:#1a1a1a; overflow:hidden; }
+.ctrl-bar-r { background:var(--red);  height:100%; transition:width 0.25s; }
+.ctrl-bar-b { background:var(--blue); height:100%; transition:width 0.25s; }
+
+.dice-ctrl-row { display:flex; align-items:center; gap:0.45rem; }
+.dice-pips { display:flex; flex-wrap:wrap; gap:3px; flex:1; align-items:center; }
+.die-pip { width:18px; height:18px; background:#1a1a1a; border:1px solid #333; display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:0.65rem; color:var(--gold); }
+
+.card-footer { display:flex; gap:0.4rem; padding:0.5rem 1rem 0.75rem; border-top:1px solid var(--border); }
+.btn-card { background:transparent; border:1px solid var(--border2); color:var(--muted); font-family:'Oswald',sans-serif; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.3rem 0.6rem; cursor:pointer; transition:all 0.15s; flex:1; }
+.btn-card:hover { border-color:var(--red); color:var(--red); }
+
+.empty-board { text-align:center; padding:4rem 2rem; color:var(--muted); }
+.empty-board p { font-family:'Special Elite',serif; font-size:1.1rem; margin-bottom:1.5rem; line-height:1.6; }
+
+.card-dead { opacity:0.55; }
+.card-dead .card-portrait { filter:grayscale(1); }
+
+/* CLASSE NOVA PARA OCULTAR O GUI DO MESTRE */
+.clean-mode .master-controls { display: none !important; }
+.clean-mode .card-footer { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="view-form">
+<div class="form-shell">
+  <div class="form-header">
+    <span class="rpg-tag">RPG</span>
+    <h1>SCREAM</h1>
+    <span class="pt-tag">PT 2</span>
+    <div class="blood-line"></div>
+  </div>
+
+  <div class="portrait-upload-area">
+    <div class="portrait-circle" onclick="document.getElementById('gif-input').click()">
+      <div class="ph" id="portraitPh">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+        Clique para<br>adicionar foto/video
+      </div>
+      <img id="portraitImg" src="" alt="">
+      <video id="portraitVid" src="" autoplay loop muted playsinline></video>
+    </div>
+    <input type="file" id="gif-input" accept="image/*,video/mp4" onchange="handleGif(event)">
+    <div style="font-size:0.7rem;color:var(--muted);margin-top:0.5rem;letter-spacing:0.1em;text-transform:uppercase;">Aceita GIF, MP4, PNG, JPG (Até 1MB)</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Identificação</div>
+    <div class="field">
+      <label>Nome do Personagem</label>
+      <input type="text" id="charName" placeholder="Ex: Sidney Prescott">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Atributos Vitais</div>
+    <div class="field-row">
+      <div class="field"><label>Vida Atual</label><input type="number" id="hpCur" value="9" min="0" oninput="previewBars()"></div>
+      <div class="field"><label>Vida Máxima</label><input type="number" id="hpMax" value="9" min="1" oninput="previewBars()"></div>
+      <div class="field"><label>Tensão Atual</label><input type="number" id="spCur" value="0" min="0" oninput="previewBars()"></div>
+      <div class="field"><label>Tensão Máxima</label><input type="number" id="spMax" value="8" min="1" oninput="previewBars()"></div>
+    </div>
+    <div class="bar-preview">
+      <div class="bar-label">Vida</div>
+      <div class="bar-track"><div class="bar-fill-red" id="prev-hp" style="width:100%"></div><div class="bar-text" id="prev-hp-txt">9/9</div></div>
+      <div class="bar-label">Tensão</div>
+      <div class="bar-track"><div class="bar-fill-blue" id="prev-sp" style="width:0%"></div><div class="bar-text" id="prev-sp-txt">0/8</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Dados</div>
+    <div class="dice-controls">
+      <div class="dice-count-badge" id="diceCountBadge">0</div>
+      <button class="btn-dice" onclick="addDie()">+ Adicionar</button>
+      <button class="btn-dice" onclick="removeDie()">− Remover</button>
+    </div>
+    <div class="dice-display" id="diceDisplay"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Arquétipos</div>
+    <div class="arch-grid" id="archGrid"></div>
+  </div>
+
+  <div class="firebase-section">
+    <div class="section-title">Firebase (Configurado)</div>
+    <div class="firebase-row">
+      <div class="field"><label>API Key</label><input type="text" id="fb-key" value="AIzaSyA199P2BWnZNqR1Alo8c1ioSOjuHMmf8os" readonly></div>
+      <div class="field"><label>Project ID</label><input type="text" id="fb-pid" value="scream-4246f" readonly></div>
+      <div class="field"><label>Auth Domain</label><input type="text" id="fb-dom" value="scream-4246f.firebaseapp.com" readonly></div>
+      <div class="field"><label>App ID</label><input type="text" id="fb-aid" value="1:637590684630:web:cab2a5ae7087c3b92f9a77" readonly></div>
+    </div>
+    <div style="display:flex;gap:0.75rem;margin-top:0.75rem;flex-wrap:wrap;align-items:center;">
+      <button class="btn-dice" onclick="connectFirebase()">Reconectar Firebase</button>
+      <span id="fbBadge" class="fb-badge off">Offline</span>
+    </div>
+  </div>
+
+  <button class="btn-submit" onclick="addCharacter()">⚔ Adicionar ao Quadro</button>
+
+  <div class="save-bar">
+    <span class="save-status" id="saveStatus">Pronto</span>
+    <button class="btn-dice" onclick="goBoard()">Ver Quadro de Personagens →</button>
+  </div>
+</div>
+</div>
+
+<div id="view-board">
+<div class="board-shell">
+  <div class="board-header"><h1>QUADRO DE <span>SOBREVIVENTES</span></h1></div>
+  
+  <div class="board-nav">
+    <button class="btn-nav" onclick="goForm()">← Nova Ficha</button>
+    <button class="btn-nav" id="toggleGuiBtn" onclick="toggleGui()">Ocultar Controles</button>
+    <span id="boardCount" style="font-size:0.8rem;color:var(--muted);letter-spacing:0.15em;"></span>
+    <button class="btn-nav" onclick="saveAll()">Salvar tudo</button>
+  </div>
+  
+  <div class="chars-grid" id="charsGrid">
+    <div class="empty-board">
+      <p>Nenhum sobrevivente ainda.<br>Adicione personagens pela ficha.</p>
+      <button class="btn-nav add" onclick="goForm()">+ Criar Personagem</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+window._fb = { initializeApp, getFirestore, collection, getDocs, setDoc, doc, deleteDoc };
+</script>
+
+<script>
+const ARCHETYPES = [
+  {id:'heroi',    label:'Herói',    icon:'⚔️'},
+  {id:'relaxado', label:'Relaxado', icon:'😌'},
+  {id:'esbelto',  label:'Esbelto',  icon:'🏹'},
+  {id:'nerd',     label:'Nerd',     icon:'📚'},
+  {id:'cetico',   icon:'🤨',  label:'Cético'},
+  {id:'inocente', label:'Inocente', icon:'🌸'},
+  {id:'atleta',   label:'Atleta',   icon:'💪'},
+  {id:'valentao', label:'Valentão', icon:'🗡️'},
+];
+
+let formDice = [], activeArchs = new Set(), characters = [];
+let gifDataUrl = null, editingId = null, db = null;
+let isGuiHidden = false; // Controle de estado do botão de visualização
+
+async function init() {
+  renderArchGrid(); previewBars(); loadLocal();
+  const apiKey = document.getElementById('fb-key').value;
+  if(apiKey) connectFirebase();
+  if (characters.length > 0) goBoard();
+}
+
+function goBoard() {
+  document.getElementById('view-form').style.display = 'none';
+  document.getElementById('view-board').style.display = 'block';
+  renderBoard();
+}
+function goForm() {
+  document.getElementById('view-board').style.display = 'none';
+  document.getElementById('view-form').style.display = 'block';
+}
+
+// Função NOVA para alternar a exibição da GUI do mestre
+function toggleGui() {
+  isGuiHidden = !isGuiHidden;
+  const grid = document.getElementById('charsGrid');
+  const btn = document.getElementById('toggleGuiBtn');
+  
+  if (isGuiHidden) {
+    grid.classList.add('clean-mode');
+    btn.innerHTML = '👁️ Mostrar Controles';
+  } else {
+    grid.classList.remove('clean-mode');
+    btn.innerHTML = '👁️ Ocultar Controles';
+  }
+}
+
+function renderArchGrid() {
+  const g = document.getElementById('archGrid'); g.innerHTML = '';
+  ARCHETYPES.forEach(a => {
+    const b = document.createElement('button');
+    b.className = 'arch-btn' + (activeArchs.has(a.id) ? ' active' : '');
+    b.innerHTML = `<span class="arch-icon">${a.icon}</span>${a.label}`;
+    b.onclick = () => { activeArchs.has(a.id) ? activeArchs.delete(a.id) : activeArchs.add(a.id); renderArchGrid(); };
+    g.appendChild(b);
+  });
+}
+
+function previewBars() {
+  const hc = +document.getElementById('hpCur').value||0, hm = +document.getElementById('hpMax').value||1;
+  const sc = +document.getElementById('spCur').value||0, sm = +document.getElementById('spMax').value||1;
+  document.getElementById('prev-hp').style.width = Math.min(100,Math.round(hc/hm*100))+'%';
+  document.getElementById('prev-sp').style.width = Math.min(100,Math.round(sc/sm*100))+'%';
+  document.getElementById('prev-hp-txt').textContent = hc+'/'+hm;
+  document.getElementById('prev-sp-txt').textContent = sc+'/'+sm;
+}
+
+function addDie() { formDice.push(Date.now()); renderFormDice(); }
+function removeDie() { if(formDice.length){ formDice.pop(); renderFormDice(); } }
+function renderFormDice() {
+  document.getElementById('diceCountBadge').textContent = formDice.length;
+  const d = document.getElementById('diceDisplay'); d.innerHTML = '';
+  formDice.forEach((_,i) => { const c = document.createElement('div'); c.className='die-chip'; c.textContent='D'+(i+1); d.appendChild(c); });
+}
+
+function handleGif(e) {
+  const f = e.target.files[0]; 
+  if(!f) return;
+  if (f.size > 1048576) { alert("Arquivo muito grande! Escolha um menor que 1MB."); return; }
+  
+  const r = new FileReader();
+  r.onload = ev => {
+    gifDataUrl = ev.target.result;
+    
+    const isVid = gifDataUrl.startsWith('data:video');
+    const placeholder = document.getElementById('portraitPh');
+    const imgExibicao = document.getElementById('portraitImg');
+    const vidExibicao = document.getElementById('portraitVid');
+    
+    if (placeholder) placeholder.style.display = 'none';
+    
+    if (isVid) {
+      if (imgExibicao) imgExibicao.style.display = 'none';
+      if (vidExibicao) { vidExibicao.src = gifDataUrl; vidExibicao.style.display = 'block'; }
+    } else {
+      if (vidExibicao) vidExibicao.style.display = 'none';
+      if (imgExibicao) { imgExibicao.src = gifDataUrl; imgExibicao.style.display = 'block'; }
+    }
+  };
+  r.readAsDataURL(f);
+}
+
+function addCharacter() {
+  const name = document.getElementById('charName').value.trim();
+  if (!name) { alert('Coloca o nome do personagem!'); return; }
+  const char = {
+    id: editingId || Date.now().toString(), name, gif: gifDataUrl,
+    hpCur: +document.getElementById('hpCur').value||0,
+    hpMax: +document.getElementById('hpMax').value||9,
+    spCur: +document.getElementById('spCur').value||0,
+    spMax: +document.getElementById('spMax').value||8,
+    diceCount: formDice.length, archs: [...activeArchs],
+  };
+  const idx = characters.findIndex(c => c.id === char.id);
+  if(idx>=0) characters[idx]=char; else characters.push(char);
+  saveLocal(); resetForm(); goBoard();
+  if(db) saveAll();
+}
+
+function resetForm() {
+  document.getElementById('charName').value='';
+  document.getElementById('hpCur').value=9; document.getElementById('hpMax').value=9;
+  document.getElementById('spCur').value=0; document.getElementById('spMax').value=8;
+  formDice=[]; activeArchs=new Set(); gifDataUrl=null; editingId=null;
+  
+  document.getElementById('portraitPh').style.display='flex';
+  
+  const imgEl = document.getElementById('portraitImg');
+  if(imgEl){ imgEl.style.display='none'; imgEl.src=''; }
+  
+  const vidEl = document.getElementById('portraitVid');
+  if(vidEl){ vidEl.style.display='none'; vidEl.src=''; }
+  
+  renderFormDice(); renderArchGrid(); previewBars();
+}
+
+function renderBoard() {
+  const grid = document.getElementById('charsGrid');
+  document.getElementById('boardCount').textContent = characters.length+' personagem(ns)';
+  if(characters.length===0){
+    grid.innerHTML=`<div class="empty-board"><p>Nenhum sobrevivente ainda.<br>Adicione personagens pela ficha.</p><button class="btn-nav add" onclick="goForm()">+ Criar Personagem</button></div>`;
+    return;
+  }
+  grid.innerHTML='';
+  characters.forEach(c => buildCard(c, grid));
+}
+
+function buildCard(c, container) {
+  const hpPct = Math.min(100,Math.round(c.hpCur/c.hpMax*100));
+  const spPct = Math.min(100,Math.round(c.spCur/c.spMax*100));
+  const archNames = (c.archs||[]).map(id=>ARCHETYPES.find(a=>a.id===id)?.label).filter(Boolean).join(', ')||'—';
+  const dead = c.hpCur<=0;
+  
+  let portrait = `<div class="card-portrait-placeholder">👤</div>`;
+  if (c.gif) {
+    if (c.gif.startsWith('data:video')) {
+      portrait = `<video class="card-portrait" src="${c.gif}" autoplay loop muted playsinline></video>`;
+    } else {
+      portrait = `<img class="card-portrait" src="${c.gif}" alt="${c.name}">`;
+    }
+  }
+  
+  const dicePips = Array.from({length:c.diceCount},(_,i)=>`<div class="die-pip">${i+1}</div>`).join('');
+  const card = document.createElement('div');
+  card.className = 'char-card'+(dead?' card-dead':'');
+  card.id = 'card-'+c.id;
+  card.innerHTML = `<div class="char-card-top"><div class="card-portrait-wrap">${portrait}<div class="card-dice-badge" id="bdg-${c.id}">${c.diceCount}</div></div><div class="card-info"><div class="card-name">${c.name}</div><div class="card-archs">${archNames}</div><div class="card-bars"><div class="card-bar-track"><div class="card-bar-fill-red" id="bhr-${c.id}" style="width:${hpPct}%"></div><div class="card-bar-label" id="lhr-${c.id}">${c.hpCur}/${c.hpMax}</div></div><div class="card-bar-track"><div class="card-bar-fill-blue" id="bhs-${c.id}" style="width:${spPct}%"></div><div class="card-bar-label" id="lhs-${c.id}">${c.spCur}/${c.spMax}</div></div></div></div></div><div class="master-controls"><div class="master-title">⚙ Controles do Mestre</div><div class="ctrl-row"><div class="ctrl-label" style="color:#c0392b;">Vida</div><button class="ctrl-btn" onclick="adj('${c.id}','hp',-1)">−</button><div class="ctrl-val" id="cv-hp-${c.id}">${c.hpCur}/${c.hpMax}</div><button class="ctrl-btn plus" onclick="adj('${c.id}','hp',+1)">+</button><div class="ctrl-bar-mini"><div class="ctrl-bar-r" id="mb-hp-${c.id}" style="width:${hpPct}%"></div></div></div><div class="ctrl-row"><div class="ctrl-label" style="color:#1a4fa0;">Tensão</div><button class="ctrl-btn" onclick="adj('${c.id}','sp',-1)">−</button><div class="ctrl-val" id="cv-sp-${c.id}">${c.spCur}/${c.spMax}</div><button class="ctrl-btn plus" onclick="adj('${c.id}','sp',+1)">+</button><div class="ctrl-bar-mini"><div class="ctrl-bar-b" id="mb-sp-${c.id}" style="width:${spPct}%"></div></div></div><div class="dice-ctrl-row"><div class="ctrl-label" style="color:var(--gold);">Dados</div><button class="ctrl-btn" onclick="adj('${c.id}','dice',-1)">−</button><div class="ctrl-val" id="cv-dc-${c.id}">${c.diceCount}</div><button class="ctrl-btn plus" onclick="adj('${c.id}','dice',+1)">+</button><div class="dice-pips" id="pips-${c.id}">${dicePips}</div></div></div><div class="card-footer"><button class="btn-card" onclick="editChar('${c.id}')">Editar Ficha</button><button class="btn-card" onclick="deleteChar('${c.id}')">Remover</button></div>`;
+  container.appendChild(card);
+}
+
+function adj(id, stat, delta) {
+  const c = characters.find(x=>x.id===id); if(!c) return;
+  if(stat==='hp'){
+    c.hpCur = Math.max(0,Math.min(c.hpMax,c.hpCur+delta));
+    const pct = Math.min(100,Math.round(c.hpCur/c.hpMax*100));
+    document.getElementById('bhr-'+id).style.width = pct+'%';
+    document.getElementById('lhr-'+id).textContent = c.hpCur+'/'+c.hpMax;
+    document.getElementById('cv-hp-'+id).textContent = c.hpCur+'/'+c.hpMax;
+    document.getElementById('mb-hp-'+id).style.width = pct+'%';
+    const card = document.getElementById('card-'+id);
+    if(card) card.className = 'char-card'+(c.hpCur<=0?' card-dead':'');
+  }
+  if(stat==='sp'){
+    c.spCur = Math.max(0,Math.min(c.spMax,c.spCur+delta));
+    const pct = Math.min(100,Math.round(c.spCur/c.spMax*100));
+    document.getElementById('bhs-'+id).style.width = pct+'%';
+    document.getElementById('lhs-'+id).textContent = c.spCur+'/'+c.spMax;
+    document.getElementById('cv-sp-'+id).textContent = c.spCur+'/'+c.spMax;
+    document.getElementById('mb-sp-'+id).style.width = pct+'%';
+  }
+  if(stat==='dice'){
+    c.diceCount = Math.max(0,c.diceCount+delta);
+    document.getElementById('cv-dc-'+id).textContent = c.diceCount;
+    document.getElementById('bdg-'+id).textContent = c.diceCount;
+    document.getElementById('pips-'+id).innerHTML = Array.from({length:c.diceCount},(_,i)=>`<div class="die-pip">${i+1}</div>`).join('');
+  }
+  saveLocal();
+}
+
+function editChar(id) {
+  const c = characters.find(x=>x.id===id); if(!c) return;
+  editingId=id;
+  document.getElementById('charName').value=c.name;
+  document.getElementById('hpCur').value=c.hpCur; document.getElementById('hpMax').value=c.hpMax;
+  document.getElementById('spCur').value=c.spCur; document.getElementById('spMax').value=c.spMax;
+  formDice=Array.from({length:c.diceCount},(_,i)=>i);
+  activeArchs=new Set(c.archs||[]);
+  
+  gifDataUrl=c.gif||null;
+  if(gifDataUrl){ 
+    document.getElementById('portraitPh').style.display='none'; 
+    const isVid = gifDataUrl.startsWith('data:video');
+    const imgEl = document.getElementById('portraitImg');
+    const vidEl = document.getElementById('portraitVid');
+    
+    if(isVid) {
+      if(imgEl) imgEl.style.display='none';
+      if(vidEl) { vidEl.src = gifDataUrl; vidEl.style.display='block'; }
+    } else {
+      if(vidEl) vidEl.style.display='none';
+      if(imgEl) { imgEl.src = gifDataUrl; imgEl.style.display='block'; }
+    }
+  }
+  
+  renderFormDice(); renderArchGrid(); previewBars(); goForm();
+}
+
+function deleteChar(id) {
+  if(!confirm('Remover este personagem?')) return;
+  characters=characters.filter(c=>c.id!==id);
+  saveLocal(); renderBoard();
+  if(db){ try{ const{doc,deleteDoc}=window._fb; deleteDoc(doc(db,'chars',id)); }catch(e){} }
+}
+
+function saveLocal() { try{ localStorage.setItem('rpg_scream_chars',JSON.stringify(characters)); }catch(e){} }
+function loadLocal() { try{ const r=localStorage.getItem('rpg_scream_chars'); if(r) characters=JSON.parse(r); }catch(e){} }
+
+async function saveAll() {
+  saveLocal();
+  const s=document.getElementById('saveStatus');
+  if(db){
+    try{
+      const{doc,setDoc}=window._fb;
+      for(const c of characters) await setDoc(doc(db,'chars',c.id),c);
+      if(s){s.textContent='✓ Salvo no Firebase';s.className='save-status ok';}
+    }catch(e){ if(s){s.textContent='✗ Erro: '+e.message;s.className='save-status err';} }
+  } else { if(s){s.textContent='✓ Salvo localmente';s.className='save-status ok';} }
+}
+
+async function connectFirebase() {
+  const apiKey=document.getElementById('fb-key').value.trim();
+  const projectId=document.getElementById('fb-pid').value.trim();
+  const authDomain=document.getElementById('fb-dom').value.trim();
+  const appId=document.getElementById('fb-aid').value.trim();
+  try{
+    const{initializeApp,getFirestore,collection,getDocs}=window._fb;
+    const app=initializeApp({apiKey,authDomain,projectId,appId});
+    db=getFirestore(app);
+    const snap=await getDocs(collection(db,'chars'));
+    if(!snap.empty){ const loaded=[]; snap.forEach(d=>loaded.push(d.data())); characters=loaded; renderBoard(); }
+    document.getElementById('fbBadge').textContent='✓ Firebase conectado';
+    document.getElementById('fbBadge').className='fb-badge on';
+  }catch(e){ console.error(e); document.getElementById('fbBadge').textContent='✗ Erro de Conexão'; document.getElementById('fbBadge').className='fb-badge off'; }
+}
+
+window.addDie=addDie; window.removeDie=removeDie; window.handleGif=handleGif;
+window.previewBars=previewBars; window.addCharacter=addCharacter;
+window.goBoard=goBoard; window.goForm=goForm;
+window.adj=adj; window.editChar=editChar; window.deleteChar=deleteChar;
+window.saveAll=saveAll; window.connectFirebase=connectFirebase; window.toggleGui=toggleGui;
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
